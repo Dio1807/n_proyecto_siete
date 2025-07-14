@@ -16,6 +16,7 @@ class Server {
         this.salasR = '/api/crearsalas'; // de salas paso 4 03/06/2025
         this.ingresarsalasR = '/api/ingresarsalas'; // de detallesalas paso 4 03/06/2025
         this.reportesR = '/api/reportes'; // rutas de reportes
+        this.reportesR = '/api/reportes'; // rutas de reportes
         this.dbConnection();
         this.middleware();
 
@@ -48,6 +49,7 @@ class Server {
         this.app.use(this.periodosR, require('./../routes/periodos'));
         this.app.use(this.salasR, require('./../routes/RoutesSala')); // de salas paso 4 03/06/2025
         this.app.use(this.ingresarsalasR, require('./../routes/RoutesIngresarSala')); // de detallesalas paso 4 03/06/2025
+        this.app.use(this.reportesR, require('./../routes/reportes')); // rutas de reportes
         this.app.use(this.reportesR, require('./../routes/reportes')); // rutas de reportes
     }
 

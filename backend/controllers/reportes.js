@@ -5,8 +5,8 @@ const { promisify } = require('util');
 
 const execAsync = promisify(exec);
 
-// Configuración de rutas
-const JASPER_STARTER_PATH = process.env.JASPER_STARTER_PATH || 'jasperstarter';
+// Configuración de rutas para Windows
+const JASPER_STARTER_PATH = process.env.JASPER_STARTER_PATH || 'jasperstarter.bat';
 const REPORTS_DIR = path.join(__dirname, '../reports'); // Carpeta donde están los .jasper
 const TEMP_DIR = path.join(__dirname, '../temp'); // Carpeta temporal para PDFs
 
@@ -16,7 +16,7 @@ if (!fs.existsSync(TEMP_DIR)) {
 }
 
 /**
- * Generar reporte PDF usando JasperStarter
+ * Generar reporte PDF usando JasperStarter en Windows
  * @param {string} jasperFile - Nombre del archivo .jasper
  * @param {Object} params - Parámetros para el reporte
  * @param {string} outputFile - Ruta del archivo de salida
@@ -33,16 +33,19 @@ const generateReport = async (jasperFile, params, outputFile) => {
 
     // Construir parámetros para JasperStarter
     const paramString = Object.entries(params)
-      .map(([key, value]) => `-P ${key}="${value}"`)
+      .map(([key, value]) => `-P "${key}=${value}"`)
       .join(' ');
 
-    // Comando JasperStarter
-    const command = `${JASPER_STARTER_PATH} process ${jasperPath} -o ${outputFile} -f pdf ${paramString}`;
+    // Comando JasperStarter para Windows (usar comillas dobles)
+    const command = `"${JASPER_STARTER_PATH}" process "${jasperPath}" -o "${outputFile}" -f pdf ${paramString}`;
     
     console.log('Ejecutando comando:', command);
     
-    // Ejecutar el comando
-    const { stdout, stderr } = await execAsync(command);
+    // Ejecutar el comando con timeout
+    const { stdout, stderr } = await execAsync(command, {
+      timeout: 30000, // 30 segundos
+      windowsHide: true // Ocultar ventana de comando en Windows
+    });
     
     if (stderr && !stderr.includes('INFO')) {
       console.error('Error en JasperStarter:', stderr);
